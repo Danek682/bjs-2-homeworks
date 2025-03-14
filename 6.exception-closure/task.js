@@ -9,8 +9,7 @@ function parseCount(value) {
   
   function validateCount(value) {
     try {
-      let number = parseCount(value)
-      return number
+      return parseCount(value)
     } catch (error) {
       return error
     }
@@ -23,9 +22,9 @@ class Triangle {
         this.secondSide = secondSide;
         this.thirdSide = thirdSide;
         
-        if (this.firstSide + this.secondSide <= this.thirdSide ||
-            this.secondSide + this.thirdSide <= this.firstSide ||
-            this.firstSide + this.thirdSide <= this.secondSide) {
+        if (firstSide + secondSide <= thirdSide ||
+            secondSide + thirdSide <= firstSide ||
+            firstSide + thirdSide <= secondSide) {
             throw new Error("Треугольник с такими сторонами не существует");
         }
     }
@@ -35,8 +34,8 @@ class Triangle {
     }
 
     get area() {
-        const s = (this.firstSide + this.secondSide + this.thirdSide) / 2;
-        return Math.sqrt(s * (s - this.firstSide) * (s - this.secondSide) * (s - this.thirdSide)).toFixed(3);
+        const s = this.perimeter / 2
+        return +Math.sqrt(s * (s - this.firstSide) * (s - this.secondSide) * (s - this.thirdSide)).toFixed(3);
     }
 }
 
