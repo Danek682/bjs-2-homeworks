@@ -2,30 +2,32 @@
 // Усовершенствуйте декоратор таким образом, чтобы в свойстве count декорированной функции хранилось количество вызовов декорированной функции.
 // Усовершенствуйте декоратор таким образом, чтобы в свойстве allCount декорированной функции хранилось количество вызовов декоратора. 
 function debounceDecoratorNew(func, delay) {
-   let timeoutId = null;
-   wrapper.count = 0;
-   wrapper.allCount = 0;
- 
-   function wrapper(...args) {
-      wrapper.allCount++;
-     if(!timeoutId){
-         func.call(this, ...args)
-         wrapper.count++
-     }
-     clearTimeout(timeoutId)
-       timeoutId = setTimeout(() => {
-         func.call(this, ...args)
-         wrapper.count++;
-         timeoutId = null
-       },delay)
-   }
- 
-   return wrapper;
- }
- 
- module.exports = {
-   debounceDecoratorNew, 
- }
+  let timeoutId = null;
+  wrapper.count = 0;
+  wrapper.allCount = 0;
+
+  function wrapper(...args) {
+    wrapper.allCount++;
+
+    if(timeoutId === null) {
+      func(...args);
+      wrapper.count++;
+    }
+
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      wrapper.count++;
+      func(...args);
+    }, delay);
+  }
+
+  return wrapper;
+}
+
+module.exports = {
+  debounceDecoratorNew, 
+}
+
 
 //  Напишите усовершенствованный кеширующий декоратор cachingDecoratorNew, аналогичный рассмотренному на лекции, так, чтобы он кешировал только последние пять различных вызовов функции — то есть чтобы кеш мог хранить только пять значений.
 
@@ -36,27 +38,27 @@ const md5 = require('./js-md5.js');
 function cachingDecoratorNew(func) {
   let cache = [];
   const maxCacheValuesCount = 5;
-
   return (...args) => {
-    const hash = md5(args.join(','))
-
-    const checkCache = cache.find((entry) => entry.hash === hash);
-    if(checkCache){
-      return 'Из кеша:' + checkCache.value
+    const hash = md5(args);
+    const objectFromCache = cache.find(object => object.hash === hash);
+    if (objectFromCache){
+      console.log("Из кеша: ", objectFromCache.value);
+      return "Из кеша: " + objectFromCache.value;
     }
 
-    const result = func(...args)
-    console.log('Вычисляем' + result)
-
-    cache.push({ hash, value: result });
-    
-    if(cache.length > maxCacheValuesCount){
-      cache.splice(0, cache.length - maxCacheValuesCount);
+    const value = func(...args);
+    cache.push({hash, value})
+    if(cache.length > maxCacheValuesCount) {
+      cache.shift();
     }
-    return result;
+
+    console.log("Вычисляем: ", value);
+    return "Вычисляем: " + value;
   };
 }
 
 module.exports = {
   cachingDecoratorNew
 }
+
+
